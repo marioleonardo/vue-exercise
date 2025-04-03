@@ -1,0 +1,9 @@
+/* src/assets/main.css */
+/* You can add global resets or base styles here if needed */
+body {
+  margin: 0;
+  font-family: var(--font-family); /* Use PrimeVue font */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--surface-ground);
+}

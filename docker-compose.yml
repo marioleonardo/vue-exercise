@@ -1,0 +1,48 @@
+# ./docker-compose.yml
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./sunlight-service # Path to backend Dockerfile context
+      dockerfile: Dockerfile     # Specify the Dockerfile name (optional if named Dockerfile)
+    container_name: sunlight_service_api
+    restart: unless-stopped
+    ports:
+      - "3000:3000" # Map host port 3000 to container port 3000
+    volumes: # Optional: Mount local code for development hot-reloading
+      - ./sunlight-service/src:/app/src # Mount only src
+      # - ./sunlight-service:/app        # Alternative: Mount whole dir (ensure node_modules exclusion)
+      # - /app/node_modules              # Exclude node_modules from being overwritten by local mount
+    environment:
+      - PORT=3000
+      # Add any other environment variables needed by the backend
+    # command: npm run dev # Use 'dev' for development with nodemon/ts-node
+    # command: npm start # Use 'start' for production after build
+
+  frontend:
+    build:
+      context: ./daylight-app   # Path to frontend Dockerfile context
+      dockerfile: Dockerfile
+    container_name: daylight_app_ui
+    restart: unless-stopped
+    ports:
+      - "5173:5173" # Map host port 5173 (Vite default) to container port 5173
+    volumes: # Optional: Mount local code for development hot-reloading
+       - ./daylight-app/src:/app/src
+       - ./daylight-app/public:/app/public
+       # - ./daylight-app:/app
+       # - /app/node_modules
+    environment:
+      # This is crucial: Frontend inside Docker talks to backend via service name 'backend' on its internal port
+      - VITE_API_BASE_URL=http://backend:3000/api
+      - VITE_DEV_SERVER_HOST=0.0.0.0 # Necessary for Vite to be accessible outside the container
+    depends_on: # Ensure backend starts before frontend (doesn't guarantee readiness, just start order)
+      - backend
+    # command: npm run dev -- --host # Run dev server, '--host' makes Vite listen on 0.0.0.0
+
+# Note: For production deployment with Docker, you'd typically:
+# 1. Build frontend static assets (`npm run build` inside Dockerfile or locally).
+# 2. Use a multi-stage Dockerfile for the frontend to copy built assets into a lightweight server image (like nginx).
+# 3. Adjust backend command to `npm start`.
+# 4. Remove volume mounts for production.

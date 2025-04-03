@@ -1,0 +1,17 @@
+// sunlight-service/tsconfig.json
+{
+    "compilerOptions": {
+      "target": "ES2016", // Compatible with Node.js versions supporting Express
+      "module": "CommonJS",
+      "outDir": "./dist",
+      "rootDir": "./src",
+      "strict": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true,
+      "resolveJsonModule": true,
+      "moduleResolution": "node"
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules"]
+  }
